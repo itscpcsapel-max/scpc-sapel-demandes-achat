@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demande interne d'achat – SCPC SAPEL</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --teal:#1a7f6e;--teal-dark:#145f52;--teal-light:#e8f5f2;--teal-mid:#c0e4dc;
+  --text:#1a2e2b;--text-muted:#5a7470;--border:#ccdeda;
+  --error:#c0392b;--bg:#f4faf8;--white:#ffffff;--radius:10px;
+  --shadow:0 2px 12px rgba(26,127,110,0.10);
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* LOGIN */
+#login-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:24px;}
+.login-card{background:var(--white);border-radius:16px;box-shadow:var(--shadow);border:1px solid var(--border);padding:40px 36px;max-width:420px;width:100%;text-align:center;}
+.login-logo{width:70px;height:70px;background:var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;}
+.login-logo svg{width:42px;height:42px;}
+.login-card h2{font-size:1.3rem;font-weight:700;margin-bottom:8px;}
+.login-card p{font-size:0.87rem;color:var(--text-muted);line-height:1.6;margin-bottom:26px;}
+.btn-ms{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px 20px;background:#0078d4;color:#fff;border:none;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;transition:background .18s;font-family:inherit;}
+.btn-ms:hover{background:#006cbd;}
+.btn-ms svg{width:20px;height:20px;flex-shrink:0;}
+#login-error{color:var(--error);font-size:0.82rem;margin-top:12px;display:none;padding:10px;background:#fdecea;border-radius:6px;}
+
+/* FORM */
+#form-screen{display:none;}
+header{background:var(--teal);color:#fff;padding:18px 32px;display:flex;align-items:center;gap:16px;}
+.logo-wrap{width:52px;height:52px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.logo-wrap svg{width:36px;height:36px;}
+header h1{font-size:1.4rem;font-weight:700;}
+header p{font-size:0.8rem;opacity:.82;margin-top:2px;}
+.user-badge{margin-left:auto;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.user-avatar{width:36px;height:36px;background:rgba(255,255,255,.25);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;color:#fff;}
+.user-info{text-align:right;}
+.user-info .uname{font-size:0.85rem;font-weight:600;}
+.user-info .uemail{font-size:0.72rem;opacity:.75;}
+.btn-logout{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:0.75rem;padding:5px 10px;border-radius:5px;cursor:pointer;margin-left:6px;font-family:inherit;}
+.btn-logout:hover{background:rgba(255,255,255,.25);}
+
+main{max-width:780px;margin:32px auto 60px;padding:0 16px;}
+.info-bar{background:var(--teal-light);border-left:4px solid var(--teal);border-radius:6px;padding:12px 16px;font-size:0.85rem;color:var(--teal-dark);margin-bottom:24px;}
+.card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);padding:24px 28px;margin-bottom:18px;}
+.card-title{font-size:0.76rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--teal);margin-bottom:16px;}
+
+.user-field{background:var(--teal-light);border:1.5px solid var(--teal-mid);border-radius:7px;padding:10px 14px;font-size:0.92rem;color:var(--teal-dark);font-weight:600;display:flex;align-items:center;gap:8px;}
+.lock-icon{opacity:.5;flex-shrink:0;}
+
+.field{margin-bottom:16px;}
+label{display:block;font-size:0.83rem;font-weight:600;color:var(--text);margin-bottom:5px;}
+label .req{color:var(--error);margin-left:2px;}
+select,input[type="text"],input[type="number"]{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:7px;font-size:0.91rem;font-family:inherit;color:var(--text);background:var(--white);transition:border-color .18s;outline:none;}
+select:focus,input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(26,127,110,0.12);}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231a7f6e' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;}
+.field-row{display:grid;grid-template-columns:1fr 120px;gap:12px;}
+
+#articles-container{display:flex;flex-direction:column;gap:12px;}
+.article-card{background:var(--teal-light);border:1.5px solid var(--teal-mid);border-radius:9px;padding:16px 18px 14px;}
+.article-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.article-num{font-size:0.77rem;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.06em;}
+.btn-remove{background:none;border:none;cursor:pointer;color:var(--error);font-size:0.78rem;font-weight:600;display:flex;align-items:center;gap:4px;padding:4px 8px;border-radius:5px;transition:background .15s;font-family:inherit;}
+.btn-remove:hover{background:#fdecea;}
+.btn-add{width:100%;padding:11px;border:2px dashed var(--teal);border-radius:8px;background:transparent;color:var(--teal);font-size:0.88rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;margin-top:4px;transition:background .15s;font-family:inherit;}
+.btn-add:hover{background:var(--teal-light);}
+
+.btn-submit{width:100%;padding:14px;background:var(--teal);color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer;transition:background .18s;font-family:inherit;}
+.btn-submit:hover{background:var(--teal-dark);}
+.btn-submit:disabled{opacity:.6;cursor:not-allowed;}
+
+#status-box{display:none;border-radius:8px;padding:14px 18px;font-size:0.9rem;font-weight:500;margin-top:16px;text-align:center;}
+#status-box.success{background:#e6f7f2;color:#0e6b52;border:1px solid #9fdecb;display:block;}
+#status-box.error{background:#fdecea;color:var(--error);border:1px solid #f4b8b4;display:block;}
+#status-box.loading{background:var(--teal-light);color:var(--teal);border:1px solid var(--teal-mid);display:block;}
+
+#progress-wrap{display:none;margin-top:14px;}
+#progress-wrap.show{display:block;}
+#progress-bar-bg{background:var(--teal-light);border-radius:99px;height:8px;overflow:hidden;}
+#progress-bar{height:100%;background:var(--teal);border-radius:99px;width:0%;transition:width .3s;}
+#progress-text{font-size:0.78rem;color:var(--teal);text-align:center;margin-top:5px;}
+
+/* SETUP GUIDE */
+.setup-banner{background:#fff8e1;border:1.5px solid #f0a500;border-radius:10px;padding:20px 24px;margin-bottom:20px;display:none;}
+.setup-banner h3{color:#b37800;font-size:0.9rem;margin-bottom:10px;}
+.setup-banner ol{font-size:0.83rem;color:#6b4c00;line-height:1.8;padding-left:18px;}
+.setup-banner code{background:#fff3cd;padding:2px 6px;border-radius:4px;font-size:0.82rem;}
+
+footer{text-align:center;font-size:0.74rem;color:var(--text-muted);padding:20px 0 8px;}
+@media(max-width:520px){.card{padding:18px 14px;}.field-row{grid-template-columns:1fr;}header{padding:14px 16px;flex-wrap:wrap;}header h1{font-size:1.1rem;}.user-info .uemail{display:none;}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M30 8 C18 16 13 30 21 43 C25 50 30 53 30 53 C30 53 35 50 39 43 C47 30 42 16 30 8Z" fill="#4fc99a"/>
+        <path d="M30 8 L30 53" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M30 27 C23 22 19 29 21 38" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M30 20 C37 15 41 22 39 31" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h2>Demande interne d'achat</h2>
+    <p>Connectez-vous avec votre compte Microsoft SCPC SAPEL. Votre nom et email seront remplis automatiquement.</p>
+    <button class="btn-ms" id="btn-login" onclick="signIn()" disabled style="opacity:0.6;cursor:not-allowed;">
+      <svg viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
+        <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
+        <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
+        <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
+      </svg>
+      <span id="btn-login-text">Chargement...</span>
+    </button>
+    <div id="login-error">Connexion echouee. Utilisez votre compte @scpc-sapel.ma</div>
+  </div>
+  <p style="font-size:0.75rem;color:#888">SCPC SAPEL Intranet &nbsp;·&nbsp; Securise par Microsoft 365</p>
+</div>
+
+<!-- FORM SCREEN -->
+<div id="form-screen">
+  <header>
+    <div class="logo-wrap">
+      <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="30" cy="30" r="28" fill="#1a7f6e"/>
+        <path d="M30 10 C18 18 14 32 22 44 C26 50 30 52 30 52 C30 52 34 50 38 44 C46 32 42 18 30 10Z" fill="#4fc99a"/>
+        <path d="M30 10 L30 52" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+        <path d="M30 28 C24 24 20 30 22 38" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M30 22 C36 18 40 24 38 32" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div>
+      <h1>Demande interne d'achat</h1>
+      <p>SCPC SAPEL — Engrais &amp; Fertilisants</p>
+    </div>
+    <div class="user-badge">
+      <div class="user-info">
+        <div class="uname" id="header-name">—</div>
+        <div class="uemail" id="header-email">—</div>
+      </div>
+      <div class="user-avatar" id="header-avatar">?</div>
+      <button class="btn-logout" onclick="signOut()">Deconnexion</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Setup warning shown if CLIENT_ID not configured -->
+    <div class="setup-banner" id="setup-banner">
+      <h3>&#9888; Configuration requise — Lisez ceci avant de deployer</h3>
+      <ol>
+        <li>Allez sur <strong>portal.azure.com</strong> &gt; Azure Active Directory &gt; App registrations &gt; <strong>New registration</strong></li>
+        <li>Nom : <code>SCPC SAPEL Demandes Achat</code> &nbsp;|&nbsp; Supported account types : <em>Single tenant</em></li>
+        <li>Redirect URI : <code>Single-page application (SPA)</code> puis entrez l'URL de cette page</li>
+        <li>Apres creation, copiez <strong>Application (client) ID</strong> et <strong>Directory (tenant) ID</strong></li>
+        <li>Allez dans <em>API permissions</em> et ajoutez : <code>User.Read</code>, <code>Sites.ReadWrite.All</code>, <code>Mail.Send</code> (Microsoft Graph)</li>
+        <li>Remplacez <code>VOTRE_CLIENT_ID</code> et <code>VOTRE_TENANT_ID</code> dans le code JavaScript de ce fichier</li>
+      </ol>
+    </div>
+
+    <div class="info-bar">
+      Connecte en tant que <strong id="info-name">—</strong>. Vous pouvez ajouter <strong>plusieurs articles</strong> dans une seule demande.
+    </div>
+
+    <div class="card">
+      <div class="card-title">Informations du demandeur</div>
+      <div class="field">
+        <label>Votre nom (auto)</label>
+        <div class="user-field">
+          <svg class="lock-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          <span id="field-nom">—</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Email (auto)</label>
+        <div class="user-field">
+          <svg class="lock-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          <span id="field-email">—</span>
+        </div>
+      </div>
+      <div class="field">
+        <label for="domaine">Domaine <span class="req">*</span></label>
+        <select id="domaine" required>
+          <option value="">— Selectionnez votre domaine —</option>
+          <option>Administration</option>
+          <option>Comptabilite / Finance</option>
+          <option>Informatique</option>
+          <option>Laboratoire</option>
+          <option>Logistique</option>
+          <option>Production</option>
+          <option>Qualite</option>
+          <option>RH</option>
+          <option>Securite</option>
+          <option>Technique / Maintenance</option>
+          <option>Autre</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="destinataire">Adresser la demande a <span class="req">*</span></label>
+        <select id="destinataire" required>
+          <option value="">— Selectionnez le responsable —</option>
+          <option value="fatima.d@scpc-sapel.ma">Fatima D.</option>
+          <option value="hassan.elm@scpc-sapel.ma">Hassan Elm.</option>
+          <option value="dengra.fadna@scpc-sapel.ma">DENGRA FADNA</option>
+          <option value="elmoudni.hassan@scpc-sapel.ma">EL MOUDNI HASSAN</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Articles demandes</div>
+      <div id="articles-container"></div>
+      <button class="btn-add" onclick="addArticle()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Ajouter un article
+      </button>
+    </div>
+
+    <button class="btn-submit" id="btn-submit" onclick="submitAll()">Envoyer la demande</button>
+
+    <div id="progress-wrap">
+      <div id="progress-bar-bg"><div id="progress-bar"></div></div>
+      <div id="progress-text"></div>
+    </div>
+    <div id="status-box"></div>
+  </main>
+
+  <footer>SCPC SAPEL Intranet &nbsp;·&nbsp; Demandes d'Achat &nbsp;·&nbsp; Securise par Microsoft 365</footer>
+</div>
+
+<script>
+// ================================================================
+// CONFIG — REPLACE THESE TWO VALUES AFTER AZURE APP REGISTRATION
+// ================================================================
+const CONFIG = {
+  clientId : "VOTRE_CLIENT_ID",   // e.g. "a1b2c3d4-..."
+  tenantId : "VOTRE_TENANT_ID",   // e.g. "f9e8d7c6-..."
+  siteUrl  : "https://scpcma.sharepoint.com/sites/IntranetSCPC-SAPEL",
+  listName : "Demandes dAchat",
+  destinataires: {
+    "fatima.d@scpc-sapel.ma"     : "Fatima D.",
+    "hassan.elm@scpc-sapel.ma"   : "Hassan Elm.",
+    "dengra.fadna@scpc-sapel.ma" : "DENGRA FADNA",
+    "elmoudni.hassan@scpc-sapel.ma":"EL MOUDNI HASSAN"
+  }
+};
+
+const OPTION_LIST = [
+  "Fourniture de bureau","Fourniture de production","Fourniture laboratoire",
+  "Fourniture de securite","Informatique","Mobilier de bureau",
+  "Logistique et parc automobile","Reparation et maintenance depot",
+  "Materiel et outillage","Autre"
+];
+
+// ================================================================
+// MSAL
+// ================================================================
+let msalInstance, currentUser;
+
+function initMsal() {
+  if(CONFIG.clientId === "VOTRE_CLIENT_ID") {
+    document.getElementById("setup-banner").style.display = "block";
+  }
+  msalInstance = new msal.PublicClientApplication({
+    auth:{
+      clientId : CONFIG.clientId,
+      authority: "https://login.microsoftonline.com/" + CONFIG.tenantId,
+      redirectUri: window.location.href.split("?")[0].split("#")[0]
+    },
+    cache:{ cacheLocation:"sessionStorage" }
+  });
+}
+
+// Scopes split: login first, then request extra permissions after
+const SCOPES_LOGIN = ["User.Read"];
+const SCOPES_ALL   = ["User.Read","Sites.ReadWrite.All","Mail.Send"];
+
+async function signIn() {
+  try {
+    // Step 1: Login with basic scope only
+    const res = await msalInstance.loginPopup({
+      scopes: SCOPES_LOGIN,
+      prompt: "select_account"
+    });
+    currentUser = res.account;
+
+    // Step 2: Request full permissions — user sees consent popup if first time
+    try {
+      await msalInstance.acquireTokenSilent({ scopes: SCOPES_ALL, account: currentUser });
+    } catch(e) {
+      // Silent failed → show interactive consent popup
+      await msalInstance.acquireTokenPopup({ scopes: SCOPES_ALL, account: currentUser });
+    }
+
+    await loadUserProfile();
+    showForm();
+  } catch(e) {
+    console.error(e);
+    var errBox = document.getElementById("login-error");
+    if(e.errorCode === "user_cancelled") {
+      errBox.textContent = "Connexion annulee. Veuillez accepter les permissions pour continuer.";
+    } else {
+      errBox.textContent = "Connexion echouee: " + (e.message || e.errorCode || "erreur inconnue");
+    }
+    errBox.style.display = "block";
+  }
+}
+
+async function loadUserProfile() {
+  const resp = await callGraph("https://graph.microsoft.com/v1.0/me");
+  const p = await resp.json();
+  const name  = p.displayName || currentUser.name || "";
+  const email = p.mail || p.userPrincipalName || "";
+  currentUser._name  = name;
+  currentUser._email = email;
+  document.getElementById("field-nom").textContent    = name;
+  document.getElementById("field-email").textContent  = email;
+  document.getElementById("info-name").textContent    = name;
+  document.getElementById("header-name").textContent  = name;
+  document.getElementById("header-email").textContent = email;
+  document.getElementById("header-avatar").textContent= name.charAt(0).toUpperCase();
+}
+
+async function getToken() {
+  try {
+    const r = await msalInstance.acquireTokenSilent({ scopes: SCOPES_ALL, account: currentUser });
+    return r.accessToken;
+  } catch(e) {
+    const r = await msalInstance.acquireTokenPopup({ scopes: SCOPES_ALL, account: currentUser });
+    return r.accessToken;
+  }
+}
+
+async function callGraph(url, method, body) {
+  method = method || "GET";
+  const token = await getToken();
+  const opts = {
+    method: method,
+    headers: { "Authorization":"Bearer "+token, "Content-Type":"application/json" }
+  };
+  if(body) opts.body = JSON.stringify(body);
+  return fetch(url, opts);
+}
+
+function signOut() {
+  msalInstance.logoutPopup();
+  document.getElementById("form-screen").style.display = "none";
+  document.getElementById("login-screen").style.display = "flex";
+}
+function showForm() {
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("form-screen").style.display  = "block";
+}
+
+// ================================================================
+// Articles
+// ================================================================
+let articleCount = 0;
+
+function addArticle() {
+  articleCount++;
+  var idx = articleCount;
+  var div = document.createElement("div");
+  div.className = "article-card";
+  div.id = "article-" + idx;
+  var removeBtn = idx > 1
+    ? '<button class="btn-remove" onclick="removeArticle('+idx+')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Supprimer</button>'
+    : "";
+  var opts = OPTION_LIST.map(function(o){ return '<option>'+o+'</option>'; }).join("");
+  div.innerHTML =
+    '<div class="article-header">' +
+      '<span class="article-num">Article ' + idx + '</span>' + removeBtn +
+    '</div>' +
+    '<div class="field">' +
+      '<label>Categorie <span class="req">*</span></label>' +
+      '<select id="option-'+idx+'" required><option value="">— Selectionnez —</option>' + opts + '</select>' +
+    '</div>' +
+    '<div class="field-row">' +
+      '<div class="field" style="margin-bottom:0"><label>Description <span class="req">*</span></label>' +
+        '<input type="text" id="desc-'+idx+'" placeholder="Ex : Papier A4, masque jetable..." required></div>' +
+      '<div class="field" style="margin-bottom:0"><label>Quantite <span class="req">*</span></label>' +
+        '<input type="number" id="qty-'+idx+'" min="1" placeholder="1" required></div>' +
+    '</div>';
+  document.getElementById("articles-container").appendChild(div);
+}
+
+function removeArticle(idx) {
+  var el = document.getElementById("article-"+idx);
+  if(el) el.remove();
+}
+
+// ================================================================
+// Validation
+// ================================================================
+function validateForm() {
+  if(!document.getElementById("domaine").value)      { alert("Choisissez votre domaine."); return false; }
+  if(!document.getElementById("destinataire").value) { alert("Choisissez le destinataire."); return false; }
+  var cards = document.querySelectorAll(".article-card");
+  if(cards.length === 0) { alert("Ajoutez au moins un article."); return false; }
+  for(var i=0;i<cards.length;i++) {
+    var id  = cards[i].id.split("-")[1];
+    var opt = document.getElementById("option-"+id) ? document.getElementById("option-"+id).value : "";
+    var dsc = document.getElementById("desc-"+id)   ? document.getElementById("desc-"+id).value.trim() : "";
+    var qty = document.getElementById("qty-"+id)    ? document.getElementById("qty-"+id).value : "";
+    if(!opt||!dsc||!qty||parseInt(qty)<1){ alert("Completez tous les champs de l'Article "+id+"."); return false; }
+  }
+  return true;
+}
+
+// ================================================================
+// SharePoint via Graph API
+// ================================================================
+var _siteId = null, _listId = null;
+
+async function getSiteAndList() {
+  if(_siteId && _listId) return;
+  var sr = await callGraph("https://graph.microsoft.com/v1.0/sites/scpcma.sharepoint.com:/sites/IntranetSCPC-SAPEL");
+  var site = await sr.json();
+  _siteId = site.id;
+  var lr = await callGraph("https://graph.microsoft.com/v1.0/sites/"+_siteId+"/lists?$filter=displayName eq '"+CONFIG.listName+"'");
+  var lists = await lr.json();
+  _listId = lists.value[0].id;
+}
+
+async function saveToSharePoint(item) {
+  await getSiteAndList();
+  var resp = await callGraph(
+    "https://graph.microsoft.com/v1.0/sites/"+_siteId+"/lists/"+_listId+"/items",
+    "POST", { fields: item }
+  );
+  if(!resp.ok) {
+    var err = await resp.json().catch(function(){ return {}; });
+    throw new Error((err.error && err.error.message) || ("HTTP "+resp.status));
+  }
+}
+
+// ================================================================
+// Email via Graph API
+// ================================================================
+async function sendNotificationEmail(articles, destEmail, destName) {
+  var nom    = currentUser._name;
+  var email  = currentUser._email;
+  var domaine= document.getElementById("domaine").value;
+  var date   = new Date().toLocaleDateString("fr-MA",{day:"2-digit",month:"long",year:"numeric"});
+  var rows   = articles.map(function(a,i){
+    return '<tr style="background:'+(i%2===0?"#f4faf8":"#fff")+'">' +
+      '<td style="padding:8px 12px;border:1px solid #ccdeda">'+(i+1)+'</td>' +
+      '<td style="padding:8px 12px;border:1px solid #ccdeda">'+a.option+'</td>' +
+      '<td style="padding:8px 12px;border:1px solid #ccdeda">'+a.desc+'</td>' +
+      '<td style="padding:8px 12px;border:1px solid #ccdeda;text-align:center">'+a.qty+'</td>' +
+    '</tr>';
+  }).join("");
+
+  var html =
+    '<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">' +
+      '<div style="background:#1a7f6e;padding:20px 24px;border-radius:8px 8px 0 0">' +
+        '<h2 style="color:#fff;margin:0;font-size:1.1rem">Nouvelle demande d\'achat</h2>' +
+        '<p style="color:rgba(255,255,255,.8);margin:4px 0 0;font-size:.82rem">SCPC SAPEL Intranet</p>' +
+      '</div>' +
+      '<div style="background:#fff;padding:24px;border:1px solid #ccdeda;border-top:none;border-radius:0 0 8px 8px">' +
+        '<table style="width:100%;border-collapse:collapse;margin-bottom:20px">' +
+          '<tr><td style="padding:6px 0;color:#5a7470;font-size:.84rem;width:120px">Demandeur</td><td style="padding:6px 0;font-weight:600">'+nom+'</td></tr>' +
+          '<tr><td style="padding:6px 0;color:#5a7470;font-size:.84rem">Email</td><td style="padding:6px 0">'+email+'</td></tr>' +
+          '<tr><td style="padding:6px 0;color:#5a7470;font-size:.84rem">Domaine</td><td style="padding:6px 0">'+domaine+'</td></tr>' +
+          '<tr><td style="padding:6px 0;color:#5a7470;font-size:.84rem">Date</td><td style="padding:6px 0">'+date+'</td></tr>' +
+          '<tr><td style="padding:6px 0;color:#5a7470;font-size:.84rem">Nb articles</td><td style="padding:6px 0">'+articles.length+'</td></tr>' +
+        '</table>' +
+        '<h3 style="font-size:.88rem;color:#1a7f6e;margin-bottom:10px">Articles demandes :</h3>' +
+        '<table style="width:100%;border-collapse:collapse;font-size:.86rem">' +
+          '<thead><tr style="background:#1a7f6e;color:#fff">' +
+            '<th style="padding:8px 12px;border:1px solid #1a7f6e">#</th>' +
+            '<th style="padding:8px 12px;border:1px solid #1a7f6e;text-align:left">Categorie</th>' +
+            '<th style="padding:8px 12px;border:1px solid #1a7f6e;text-align:left">Description</th>' +
+            '<th style="padding:8px 12px;border:1px solid #1a7f6e">Qte</th>' +
+          '</tr></thead>' +
+          '<tbody>'+rows+'</tbody>' +
+        '</table>' +
+        '<div style="margin-top:18px;padding:12px 16px;background:#e8f5f2;border-radius:6px;font-size:.81rem;color:#1a7f6e">' +
+          'Allez sur la liste SharePoint pour valider ou rejeter cette demande.' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+  await callGraph("https://graph.microsoft.com/v1.0/me/sendMail","POST",{
+    message:{
+      subject:"[Demande Achat] "+nom+" — "+articles.length+" article(s) — "+date,
+      body:{ contentType:"HTML", content:html },
+      toRecipients:[{ emailAddress:{ address:destEmail, name:destName } }],
+      replyTo:[{ emailAddress:{ address:email, name:nom } }]
+    },
+    saveToSentItems:false
+  });
+}
+
+// ================================================================
+// Submit
+// ================================================================
+async function submitAll() {
+  if(!validateForm()) return;
+
+  var cards      = document.querySelectorAll(".article-card");
+  var nom        = currentUser._name;
+  var email      = currentUser._email;
+  var domaine    = document.getElementById("domaine").value;
+  var destEmail  = document.getElementById("destinataire").value;
+  var destName   = CONFIG.destinataires[destEmail] || destEmail;
+  var total      = cards.length;
+
+  var articles = [];
+  for(var i=0;i<cards.length;i++){
+    var id = cards[i].id.split("-")[1];
+    articles.push({
+      option: document.getElementById("option-"+id).value,
+      desc  : document.getElementById("desc-"+id).value.trim(),
+      qty   : parseInt(document.getElementById("qty-"+id).value)
+    });
+  }
+
+  var btn      = document.getElementById("btn-submit");
+  var statusBox= document.getElementById("status-box");
+  var progWrap = document.getElementById("progress-wrap");
+  var progBar  = document.getElementById("progress-bar");
+  var progText = document.getElementById("progress-text");
+
+  btn.disabled = true;
+  statusBox.className   = "loading";
+  statusBox.textContent = "Enregistrement en cours... (0 / "+total+")";
+  progWrap.className    = "show";
+  progBar.style.width   = "0%";
+
+  var done = 0, errors = [];
+
+  for(var j=0;j<articles.length;j++){
+    var a = articles[j];
+    try {
+      await saveToSharePoint({
+        Title                   : nom,
+        SoumisParNom            : nom,
+        SoumisParEmail          : email,
+        Domaine                 : domaine,
+        Option                  : a.option,
+        DescriptionDeLaDemande  : a.desc,
+        Quantit_x00e9_          : a.qty,
+        PersonneConcern_x00e9_e : destName,
+        Statut                  : "Nouveau",
+        StatutDeValidation      : "En Attente"
+      });
+      done++;
+      var pct = Math.round((done/(total+1))*100);
+      progBar.style.width  = pct+"%";
+      progText.textContent = done+" / "+total+" articles enregistres...";
+      statusBox.textContent= "Enregistrement... ("+done+" / "+total+")";
+    } catch(e) {
+      errors.push("Article "+(j+1)+": "+e.message);
+    }
+  }
+
+  try {
+    statusBox.textContent = "Envoi de la notification email...";
+    await sendNotificationEmail(articles, destEmail, destName);
+    progBar.style.width  = "100%";
+    progText.textContent = "Email envoye!";
+  } catch(e) {
+    errors.push("Email: "+e.message);
+  }
+
+  btn.disabled = false;
+
+  if(errors.length === 0){
+    statusBox.className = "success";
+    statusBox.innerHTML = "<strong>"+total+" article"+(total>1?"s":"")+" enregistre"+(total>1?"s":"")+" avec succes!</strong><br>Notification envoyee a <strong>"+destName+"</strong>.";
+    setTimeout(function(){
+      document.getElementById("domaine").value = "";
+      document.getElementById("destinataire").value = "";
+      document.getElementById("articles-container").innerHTML = "";
+      articleCount = 0;
+      addArticle();
+      progWrap.className = "";
+      statusBox.className = "";
+      statusBox.style.display = "none";
+    }, 4000);
+  } else {
+    statusBox.className = "error";
+    statusBox.innerHTML = done+" / "+total+" enregistres.<br><small>"+errors.join("<br>")+"</small>";
+  }
+}
+
+// ================================================================
+// Init — load MSAL dynamically then initialize
+// ================================================================
+addArticle();
+
+function loadMsalAndInit() {
+  var script = document.createElement("script");
+  script.src = "https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js";
+  script.onload = function() {
+    try {
+      initMsal();
+      // Enable login button now that MSAL is ready
+      var btn = document.getElementById("btn-login");
+      var btnText = document.getElementById("btn-login-text");
+      btn.disabled = false;
+      btn.style.opacity = "1";
+      btn.style.cursor = "pointer";
+      btnText.textContent = "Se connecter avec Microsoft";
+
+      msalInstance.handleRedirectPromise().then(function(){
+        var accounts = msalInstance.getAllAccounts();
+        if(accounts.length > 0){
+          currentUser = accounts[0];
+          msalInstance.acquireTokenSilent({ scopes: SCOPES_ALL, account: currentUser })
+            .then(function(){ loadUserProfile().then(showForm).catch(function(){}); })
+            .catch(function(){ /* Session expired, user logs in again */ });
+        }
+      }).catch(function(e){ console.error("handleRedirectPromise error:", e); });
+    } catch(e) {
+      console.error("MSAL init error:", e);
+      document.getElementById("login-error").textContent = "Erreur initialisation: " + e.message;
+      document.getElementById("login-error").style.display = "block";
+    }
+  };
+  script.onerror = function() {
+    var errBox = document.getElementById("login-error");
+    errBox.textContent = "Erreur: impossible de charger Microsoft Auth. Verifiez votre connexion internet.";
+    errBox.style.display = "block";
+  };
+  document.head.appendChild(script);
+}
+
+// Wait for DOM to be fully ready
+if(document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", loadMsalAndInit);
+} else {
+  loadMsalAndInit();
+}
+</script>
+</body>
+</html>
